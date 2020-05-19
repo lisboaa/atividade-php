@@ -13,21 +13,6 @@ function formatarData($data, $format) {
     return '';
 }
 
-$db = Banco::getConnection();
-
-try {
-    if (isset($_POST['acao']) && $_POST['acao'] == 'excluir' && $_POST['id'] > 0) {
-        $sql = 'DELETE FROM pessoa WHERE id = :id';
-        $excluir = $db->prepare($sql);
-        $excluir->bindValue(":id", $_POST['id']);
-        $excluir->execute();
-    }
-} catch (PDOException $exception) {
-    echo $exception->getMessage();
-}
-
-
-
 $bindParams = [];
 if (isset($_GET['buscarnome']) and !empty($_GET['buscarnome'])) {
     $bindParams[':buscarnome'] = "%{$_GET['buscarnome']}%";
@@ -44,6 +29,7 @@ if (isset($_GET['buscarmesnascimento']) and !empty($_GET['buscarmesnascimento'])
 }
 
 try {
+    $db = Banco::getConnection();
     $sql = "SELECT * FROM pessoa WHERE id {$filter} ORDER BY nome";
     $buscarDadosPessoa = $db->prepare($sql);
     $buscarDadosPessoa->execute($bindParams);
@@ -51,13 +37,6 @@ try {
 } catch (PDOException $exception) {
     echo $exception->getMessage();
 }
-
-$sql = "SELECT * FROM pessoa WHERE id {$filter} ORDER BY nome";
-$buscarPessoa = $db->prepare($sql);
-$buscarPessoa->execute($bindParams);
-$dadosPessoa = $buscarPessoa->fetchAll(PDO::FETCH_OBJ);
-
-
 ?>
 
 <!doctype html>

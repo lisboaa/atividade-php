@@ -2,11 +2,21 @@
 
 require 'conexao.php';
 
+function formatarData($data, $format) {
+    switch ($format) {
+        case 'BR':
+            return implode('/', array_reverse(explode('-', $data)));
+        case 'US':
+            return implode('-', array_reverse(explode('/', $data)));
+    }
+    return '';
+}
 
 $acao = $_REQUEST['acao'];
 
 switch ($acao) {
     case 'gravar':
+        try {
             $db = Banco::getConnection();
             $salvar = $db->prepare('INSERT INTO pessoa SET nome = :nome, 
                                                     sexo = :sexo, pai = :pai, mae = :mae,
@@ -27,9 +37,12 @@ switch ($acao) {
             $salvar->bindValue(":email", $_POST['email'], PDO::PARAM_STR);
             $salvar->bindValue(":nascimento", formatarData($_POST['nascimento'], 'US'), PDO::PARAM_STR);
             $salvar->execute();
-
+        } catch (PDOException $exception) {
+            echo json_encode(array("sucesso" => false, "dados" => $exception->getMessage()));
+            exit();
+        }
+        echo json_encode(array("sucesso" => true, "dados" => "Dados salvos com sucesso"));
         break;
-
 
 
 
@@ -65,14 +78,37 @@ switch ($acao) {
         $atualizar->bindValue(":email", $_POST['email'], PDO::PARAM_STR);
         $atualizar->execute();
         break;
+
     case 'listar':
-        // faz
+        $db = Banco::getConnection();
+        $sql = "SELECT * FROM pessoa WHERE id {$filter} ORDER BY nome";
+        $buscarPessoa = $db->prepare($sql);
+        $buscarPessoa->execute($bindParams);
+        $dadosPessoa = $buscarPessoa->fetchAll(PDO::FETCH_OBJ);
         break;
+
     case 'excluir':
+        $db = Banco::getConnection();
         $sql = 'DELETE FROM pessoa WHERE id = :id';
         $excluir = $db->prepare($sql);
         $excluir->bindValue(":id", $_POST['id']);
         $excluir->execute();
+        break;
+
+    case 'getId':
+        $db = Banco::getConnection();
+        $sql = "SELECT * FROM pessoa WHERE id = :id";
+        $buscarPessoa = $db->prepare($sql);
+        $buscarPessoa->bindValue(":id", $_GET['id']);
+        $buscarPessoa->execute();
+        $dadosPessoa = $buscarPessoa->fetch(PDO::FETCH_ASSOC);
+        break;
+
+    case 'filtro':
+        $sql = "SELECT * FROM pessoa WHERE id {$filter} ORDER BY nome";
+        $buscarDadosPessoa = $db->prepare($sql);
+        $buscarDadosPessoa->execute($bindParams);
+        $dadosPessoa = $buscarDadosPessoa->fetchAll(PDO::FETCH_OBJ);
         break;
     default:
         die('acao nao identificada: '.$acao);
