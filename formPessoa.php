@@ -2,6 +2,8 @@
 $modoEdicao = false;
 $dadoPessoa = [];
 
+
+//var_dump($_REQUEST['id']);die(0);
  function formatarData($data, $formato) {
      switch ($formato) {
          case 'BR':
@@ -25,44 +27,96 @@ $dadoPessoa = [];
 <body>
 <h2></h2>
     <form method="POST" id="formulario">
-        <input type="hidden" name="acao" value="<?php echo ($modoEdicao) ? 'atualizar' : 'gravar' ?>">
-        <input type="hidden" name="id" value="<?php if ($modoEdicao) { echo $dadosPessoa['id']; } ?>">
+        <input type="hidden" name="acao" value="">
+        <input type="hidden" name="id" value="">
         <label>Nome:</label>
-        <input name="nome" value="<?php if ($modoEdicao) { echo $dadosPessoa['nome']; } ?>" type="text"><br><br>
+        <input name="nome" id="nome" value="" type="text"><br><br>
         <label>Nascimento:</label>
-        <input name="nascimento" value="<?php if ($modoEdicao) { echo formatarData($dadosPessoa['nascimento'],'BR'); } ?>" type="text"><br><br>
+        <input name="nascimento" id="nascimento" value="" type="text"><br><br>
         <label>Pai:</label>
-        <input name="pai" value="<?php if($modoEdicao) { echo $dadosPessoa['pai'];}?>" type="text"><br><br>
+        <input name="pai" id="pai" value="" type="text"><br><br>
         <label>Mae:</label>
-        <input name="mae" value="<?php if ($modoEdicao) { echo $dadosPessoa['mae'];}?>" type="text"><br><br>
+        <input name="mae" id="mae" value="" type="text"><br><br>
         <label>Endereço:</label>
-        <input id="rua" name="endereco" value="<?php if ($modoEdicao) { echo $dadosPessoa['endereco'];}?>" type="text"><br><br>
+        <input id="rua" name="endereco" value="" type="text"><br><br>
         <label>Bairro:</label>
-        <input id="bairro" name="bairro" value="<?php if ($modoEdicao) { echo $dadosPessoa['bairro'];}?>" type="text"><br><br>
+        <input id="bairro" name="bairro" value="" type="text"><br><br>
         <label>Cep:</label>
-        <input id="cep" size="10" maxlength="9" name="cep" value="<?php if ($modoEdicao) { echo $dadosPessoa['cep'];}?>" type="text"><br><br>
+        <input id="cep" size="10" maxlength="9" name="cep" value="" type="text"><br><br>
         <label>Cidade:</label>
-        <input id="cidade" name="cidade" value="<?php if ($modoEdicao) { echo $dadosPessoa['cidade'];}?>" type="text"><br><br>
+        <input id="cidade" name="cidade" value="" type="text"><br><br>
         <label>Uf:</label>
-        <input id="uf" name="uf" value="<?php if ($modoEdicao) { echo $dadosPessoa['uf'];}?>" type="text"><br><br>
+        <input id="uf" name="uf" value="" type="text"><br><br>
         <label>Telefone:</label>
-        <input id="telefone" name="telefone" value="<?php if ($modoEdicao) { echo $dadosPessoa['telefone'];}?>" type="text"><br><br>
+        <input id="telefone" name="telefone" value="" type="text"><br><br>
         <label>Celular:</label>
-        <input name="celular" value="<?php if ($modoEdicao) { echo $dadosPessoa['celular'];}?>" type="text"><br><br>
+        <input name="celular" id="celular" value="" type="text"><br><br>
         <label>Email:</label>
-        <input name="email" value="<?php if ($modoEdicao) { echo $dadosPessoa['email'];}?>" type="text"><br><br>
+        <input name="email" id="email" value="" type="text"><br><br>
 
         <label>Sexo:</label>
-        <select name="sexo">
+        <select name="sexo" id="sexo">
             <option></option>
-            <option value="M" <?php if ($modoEdicao && $dadosPessoa['sexo'] == 'M') { echo 'selected'; }?>>Masculino</option>
-            <option value="F" <?php if ($modoEdicao && $dadosPessoa['sexo'] == 'F') { echo 'selected'; }?>>Feminino</option>
+            <option value="M">Masculino</option>
+            <option value="F">Feminino</option>
         </select><br><br>
-        <label>Sexo</label><br>
         <button type="submit" onclick="Salvar()">Enviar</button>
+        <button onclick="voltar()">Voltar</button>
     </form>
 
 <script>
+    const url = window.location.href;
+    const valorUrl = new URL(url);
+    const paramId = valorUrl.searchParams.get("id");
+
+    if(paramId > 0){
+        editar(paramId);
+    }
+
+    function editar(paramId) {
+        const data = new FormData();
+        data.set('acao', 'getById');
+        data.set('id', paramId);
+
+        fetch('pessoacontroller.php', {
+            method: 'post',
+            body: data
+        }).then((response) => {
+            return response.json();
+        }).then((response) => {
+            document.getElementById("nome").value=(response.dados.nome);
+            document.getElementById("nascimento").value=(response.dados.rua);
+            document.getElementById("bairro").value=(response.dados.bairro);
+            document.getElementById("rua").value=(response.dados.nascimento);
+            document.getElementById("pai").value=(response.dados.pai);
+            document.getElementById("mae").value=(response.dados.mae);
+            document.getElementById("cidade").value=(response.dados.cidade);
+            document.getElementById("uf").value=(response.dados.uf);
+            document.getElementById("telefone").value=(response.dados.telefone);
+            document.getElementById("celular").value=(response.dados.celular);
+            document.getElementById("email").value=(response.dados.email);
+            document.getElementById("sexo").value=(response.dados.sexo);
+        }).catch((error) => {
+            console.log(error);
+        })
+    }
+
+    function atualizar() {
+        const formulario = document.getElementById('formulario');
+        formulario.set('acao', 'atualizar');
+
+        fetch('pessoacontroller.php', {
+            method: 'post',
+            body: formulario
+        }).then((response) => {
+
+        })
+    }
+
+    function voltar() {
+        location.href = 'listagemPessoa.php';
+    }
+
     function Salvar() {
         const formulario = document.getElementById('formulario');
         formulario.addEventListener('submit', function (event) {

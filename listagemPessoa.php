@@ -37,6 +37,8 @@ try {
 } catch (PDOException $exception) {
     echo $exception->getMessage();
 }
+
+
 ?>
 
 <!doctype html>
@@ -87,9 +89,9 @@ try {
                     <td><?php echo $dados->celular?></td>
                     <td><?php echo $dados->email?></td>
                     <td><?php echo $dados->sexo?></td>
-                    <td><a href="formPessoa.php?id=<? echo $dados->id ?>" >Editar</a></td>
+                    <td><a id="editar" href="formPessoa.php?id=<? echo $dados->id ?>">Editar</a></td>
                     <td>
-                        <form action="listagemPessoa.php" method="POST">
+                        <form action="listagemPessoa.php" id="formulario" method="POST">
                             <input type="hidden" name="id" value="<?php echo $dados->id ?>">
                             <input type="hidden" name="acao" value="excluir">
                             <button type="submit">Excluir</button>
@@ -98,5 +100,8 @@ try {
                 <tr>
             <?}?>
     </table>
+<script>
+
+</script>
 </body>
 </html>

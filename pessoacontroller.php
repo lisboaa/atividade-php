@@ -2,18 +2,18 @@
 
 require 'conexao.php';
 
-function formatarData($data, $format) {
-    switch ($format) {
-        case 'BR':
-            return implode('/', array_reverse(explode('-', $data)));
-        case 'US':
-            return implode('-', array_reverse(explode('/', $data)));
-    }
-    return '';
-}
+//function formatarData($data, $format) {
+//    switch ($format) {
+//        case 'BR':
+//            return implode('/', array_reverse(explode('-', $data)));
+//        case 'US':
+//            return implode('-', array_reverse(explode('/', $data)));
+//    }
+//    return '';
+//}
 
 $acao = $_REQUEST['acao'];
-
+//var_dump($acao);die(0);
 switch ($acao) {
     case 'gravar':
         try {
@@ -43,8 +43,6 @@ switch ($acao) {
         }
         echo json_encode(array("sucesso" => true, "dados" => "Dados salvos com sucesso"));
         break;
-
-
 
     case 'atualizar':
         $db = Banco::getConnection();
@@ -95,14 +93,21 @@ switch ($acao) {
         $excluir->execute();
         break;
 
-    case 'getId':
-        $db = Banco::getConnection();
-        $sql = "SELECT * FROM pessoa WHERE id = :id";
-        $buscarPessoa = $db->prepare($sql);
-        $buscarPessoa->bindValue(":id", $_GET['id']);
-        $buscarPessoa->execute();
-        $dadosPessoa = $buscarPessoa->fetch(PDO::FETCH_ASSOC);
+    case 'getById':
+        try {
+            $db = Banco::getConnection();
+            $sql = "SELECT * FROM pessoa WHERE id = :id";
+            $buscarPessoa = $db->prepare($sql);
+            $buscarPessoa->bindValue(":id", $_POST['id']);
+            $buscarPessoa->execute();
+            $dadosPessoa = $buscarPessoa->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $exception) {
+            echo json_encode(array("sucesso" => false, "dados" => $exception->getMessage()));
+            exit();
+        }
+        echo json_encode(array("sucesso" => true, "dados" => $dadosPessoa));
         break;
+
 
     case 'filtro':
         $sql = "SELECT * FROM pessoa WHERE id {$filter} ORDER BY nome";
