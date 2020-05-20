@@ -2,15 +2,15 @@
 
 require 'conexao.php';
 
-//function formatarData($data, $format) {
-//    switch ($format) {
-//        case 'BR':
-//            return implode('/', array_reverse(explode('-', $data)));
-//        case 'US':
-//            return implode('-', array_reverse(explode('/', $data)));
-//    }
-//    return '';
-//}
+function formatarData($data, $format) {
+    switch ($format) {
+        case 'BR':
+            return implode('/', array_reverse(explode('-', $data)));
+        case 'US':
+            return implode('-', array_reverse(explode('/', $data)));
+    }
+    return '';
+}
 
 $acao = $_REQUEST['acao'];
 //var_dump($acao);die(0);
@@ -45,8 +45,9 @@ switch ($acao) {
         break;
 
     case 'atualizar':
-        $db = Banco::getConnection();
-        $atualizar = $db->prepare('UPDATE pessoa SET nome = :nome,
+        try {
+            $db = Banco::getConnection();
+            $atualizar = $db->prepare('UPDATE pessoa SET nome = :nome,
                                                             sexo = :sexo,
                                                             nascimento = :nascimento,
                                                             pai = :pai,
@@ -60,21 +61,26 @@ switch ($acao) {
                                                             celular = :celular,
                                                             email = :email WHERE id = :id');
 
-        $atualizar->bindValue(":id", (int)$_POST['id'], PDO::PARAM_INT);
-        $atualizar->bindValue(":nome", $_POST['nome'], PDO::PARAM_STR);
-        $atualizar->bindValue(":sexo", $_POST['sexo'], PDO::PARAM_STR);
-        $atualizar->bindValue(":nascimento", formatarData($_POST['nascimento'], 'US'), PDO::PARAM_STR);
-        $atualizar->bindValue(":pai", $_POST['pai'], PDO::PARAM_STR);
-        $atualizar->bindValue(":mae", $_POST['mae'], PDO::PARAM_STR);
-        $atualizar->bindValue(":endereco", $_POST['endereco'], PDO::PARAM_STR);
-        $atualizar->bindValue(":bairro", $_POST['bairro'], PDO::PARAM_STR);
-        $atualizar->bindValue(":cep", $_POST['cep'], PDO::PARAM_STR);
-        $atualizar->bindValue(":cidade", $_POST['cidade'], PDO::PARAM_STR);
-        $atualizar->bindValue(":uf", $_POST['uf'], PDO::PARAM_STR);
-        $atualizar->bindValue(":telefone", $_POST['telefone'], PDO::PARAM_STR);
-        $atualizar->bindValue(":celular", $_POST['celular'], PDO::PARAM_STR);
-        $atualizar->bindValue(":email", $_POST['email'], PDO::PARAM_STR);
-        $atualizar->execute();
+            $atualizar->bindValue(":id", (int)$_POST['id'], PDO::PARAM_INT);
+            $atualizar->bindValue(":nome", $_POST['nome'], PDO::PARAM_STR);
+            $atualizar->bindValue(":sexo", $_POST['sexo'], PDO::PARAM_STR);
+            $atualizar->bindValue(":nascimento", formatarData($_POST['nascimento'], 'US'), PDO::PARAM_STR);
+            $atualizar->bindValue(":pai", $_POST['pai'], PDO::PARAM_STR);
+            $atualizar->bindValue(":mae", $_POST['mae'], PDO::PARAM_STR);
+            $atualizar->bindValue(":endereco", $_POST['endereco'], PDO::PARAM_STR);
+            $atualizar->bindValue(":bairro", $_POST['bairro'], PDO::PARAM_STR);
+            $atualizar->bindValue(":cep", $_POST['cep'], PDO::PARAM_STR);
+            $atualizar->bindValue(":cidade", $_POST['cidade'], PDO::PARAM_STR);
+            $atualizar->bindValue(":uf", $_POST['uf'], PDO::PARAM_STR);
+            $atualizar->bindValue(":telefone", $_POST['telefone'], PDO::PARAM_STR);
+            $atualizar->bindValue(":celular", $_POST['celular'], PDO::PARAM_STR);
+            $atualizar->bindValue(":email", $_POST['email'], PDO::PARAM_STR);
+            $atualizar->execute();
+        } catch (PDOException $exception) {
+            echo json_encode(array("sucesso" => false, "dados" => $exception->getMessage()));
+            exit();
+        }
+        json_encode(array("sucesso" => true, "dados" => "Dados atualizados com sucesso"));
         break;
 
     case 'listar':

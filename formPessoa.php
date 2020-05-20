@@ -26,9 +26,8 @@ $dadoPessoa = [];
 </head>
 <body>
 <h2></h2>
-    <form method="POST" id="formulario">
-        <input type="hidden" name="acao" value="">
-        <input type="hidden" name="id" value="">
+    <form id="formulario">
+        <input type="hidden" id="id" name="id" value="">
         <label>Nome:</label>
         <input name="nome" id="nome" value="" type="text"><br><br>
         <label>Nascimento:</label>
@@ -60,7 +59,7 @@ $dadoPessoa = [];
             <option value="M">Masculino</option>
             <option value="F">Feminino</option>
         </select><br><br>
-        <button type="submit" onclick="Salvar()">Enviar</button>
+        <button type="submit">Enviar</button>
         <button onclick="voltar()">Voltar</button>
     </form>
 
@@ -84,10 +83,12 @@ $dadoPessoa = [];
         }).then((response) => {
             return response.json();
         }).then((response) => {
+            document.getElementById("id").value=(response.dados.id);
             document.getElementById("nome").value=(response.dados.nome);
-            document.getElementById("nascimento").value=(response.dados.rua);
+            document.getElementById("nascimento").value=(response.dados.nascimento);
             document.getElementById("bairro").value=(response.dados.bairro);
-            document.getElementById("rua").value=(response.dados.nascimento);
+            document.getElementById("cep").value=(response.dados.cep);
+            document.getElementById("rua").value=(response.dados.endereco);
             document.getElementById("pai").value=(response.dados.pai);
             document.getElementById("mae").value=(response.dados.mae);
             document.getElementById("cidade").value=(response.dados.cidade);
@@ -101,43 +102,67 @@ $dadoPessoa = [];
         })
     }
 
+
+    document.getElementById('formulario').addEventListener("submit", (e) => {
+        e.preventDefault();
+        Teste();
+    })
+
+    function Teste() {
+        if (paramId > 0) {
+            atualizar()
+            console.log("Atualizou");
+            return true;
+        } else {
+            Salvar();
+            console.log("Salvou");
+            return false;
+        }
+    }
+
     function atualizar() {
         const formulario = document.getElementById('formulario');
-        formulario.set('acao', 'atualizar');
+        const dadosformulario = new FormData(formulario);
+
+        dadosformulario.set('acao', 'atualizar');
 
         fetch('pessoacontroller.php', {
             method: 'post',
-            body: formulario
+            body: dadosformulario
         }).then((response) => {
-
+            return response.json();
+        }).then((response) => {
+            console.log(response);
+            alert(response.dados);
+            if (response.sucesso) {
+                window.location.href = "listagemPessoa.php";
+            }
+        }).catch((error) => {
+            console.log(error);
         })
     }
 
     function voltar() {
-        location.href = 'listagemPessoa.php';
+        window.location.href = "listagemPessoa.php";
     }
 
     function Salvar() {
         const formulario = document.getElementById('formulario');
-        formulario.addEventListener('submit', function (event) {
-            event.preventDefault();
+        const dadosFormulario = new FormData(formulario);
 
-            const dadosFormulario = new FormData(this);
-
-            fetch('pessoacontroller.php', {
-                method: 'post',
-                body: dadosFormulario
-            }).then((response) => {
-                return response.json();
-            }).then((response) => {
-                alert(response.dados);
-                if(response.sucesso) {
-                    location.href = 'listagemPessoa.php';
-                }
-                console.log(response);
-            }).catch((error) => {
-                console.log(error);
-            })
+        fetch('pessoacontroller.php', {
+            method: 'post',
+            body: dadosFormulario
+        }).then((response) => {
+            return response.json();
+        }).then((response) => {
+            alert(response.dados);
+            if(response.sucesso) {
+                location.href = 'listagemPessoa.php';
+            }
+            console.log(response);
+        }).catch((error) => {
+            console.log(error);
         })
     }
 

@@ -91,10 +91,10 @@ try {
                     <td><?php echo $dados->sexo?></td>
                     <td><a id="editar" href="formPessoa.php?id=<? echo $dados->id ?>">Editar</a></td>
                     <td>
-                        <form action="listagemPessoa.php" id="formulario" method="POST">
-                            <input type="hidden" name="id" value="<?php echo $dados->id ?>">
+                        <form action="listagemPessoa.php" id="formulario">
+                            <input type="hidden" name="id" id="id" value="<?php echo $dados->id ?>">
                             <input type="hidden" name="acao" value="excluir">
-                            <button type="submit">Excluir</button>
+                            <button id="excluir" type="submit">Excluir</button>
                         </form>
                     </td>
                 <tr>
@@ -102,6 +102,43 @@ try {
     </table>
 <script>
 
+    document.getElementById('excluir');
+    const valorId = document.getElementById('id').value;
+
+    document.getElementById('formulario').addEventListener('submit', (event) => {
+        event.preventDefault();
+        window.onload;
+        excluir();
+    })
+
+    function excluir() {
+        if (valorId > 0) {
+            const formulario = document.getElementById('formulario');
+            const data = new FormData(formulario);
+            const valorId = document.getElementById('id').value;
+
+            data.set('acao', 'excluir');
+            data.set('id',valorId);
+
+            fetch('pessoacontroller.php', {
+                method: 'post',
+                body: data
+            }).then((response) => {
+                return response.json();
+            }).then((response) => {
+                console.log(response);
+                listar();
+            }).catch((error) => {
+                console.log(error);
+            })
+        } else {
+            alert('Não foi possivel realizar a exclusão do iten solicitado');
+        }
+    }
+
+    function listar() {
+        // asdasdasd
+    }
 </script>
 </body>
 </html>
