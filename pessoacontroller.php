@@ -103,6 +103,7 @@ switch ($acao) {
         $excluir = $db->prepare($sql);
         $excluir->bindValue(":id", $_POST['id']);
         $excluir->execute();
+        echo json_encode(array("sucesso"  => true, "dados" => 'Excluido com sucesso'));
         break;
 
     case 'getById':

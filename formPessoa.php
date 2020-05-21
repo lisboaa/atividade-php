@@ -68,7 +68,7 @@ $dadoPessoa = [];
     const valorUrl = new URL(url);
     const paramId = valorUrl.searchParams.get("id");
 
-    if(paramId > 0){
+    if(paramId >= 0){
         editar(paramId);
     }
 
@@ -102,14 +102,13 @@ $dadoPessoa = [];
         })
     }
 
-
     document.getElementById('formulario').addEventListener("submit", (e) => {
         e.preventDefault();
         Teste();
     })
 
     function Teste() {
-        if (paramId > 0) {
+        if (paramId >=0) {
             atualizar()
             console.log("Atualizou");
             return true;

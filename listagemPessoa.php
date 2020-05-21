@@ -51,12 +51,12 @@ $filter = '';
     <title>Document</title>
 </head>
 <body>
-<form method="GET" action="listagemPessoa.php" id="formulario">
-    <input type="text" name="buscarnome">
-    <input type="text" name="buscarnascimento" placeholder="Buscar por data de nascimento">
-    <input type="number" min="1" max="12" maxlength="2" name="buscarmesnascimento" placeholder="Buscar por mes do nascimento">
-    <button type="submit">Buscar</button>
-</form>
+<!--<form id="formulario">-->
+<!--    <input type="text" name="buscarnome">-->
+<!--    <input type="text" name="buscarnascimento" placeholder="Buscar por data de nascimento">-->
+<!--    <input type="number" min="1" max="12" maxlength="2" name="buscarmesnascimento" placeholder="Buscar por mes do nascimento">-->
+<!--    <button type="submit">Buscar</button>-->
+<!--</form>-->
     <table border="1" id="idTabela">
         <thead>
             <tr>
@@ -78,51 +78,47 @@ $filter = '';
         </thead>
         <tbody id="tbody">
         </tbody>
-            <button onclick="criarElementos()">Criar</button>
     </table>
+
 <script>
 
-    // document.getElementById('excluir');
-//    const valorId = document.getElementById('id').value;
+   //  document.getElementById('excluir');
+   // let valorId = document.getElementById('id').value;
 
     // document.getElementById('formulario').addEventListener('submit', (event) => {
     //     event.preventDefault();
-    //     excluir();
-    //     criarTabela();
     // })
 
-    function excluir() {
-        if (valorId > 0) {
-            const valorId = document.getElementById('id').value;
-
-            data.set('acao', 'excluir');
-            data.set('id',valorId);
-
-            fetch('pessoacontroller.php', {
-                method: 'post',
-                body: data
-            }).then((response) => {
-                return response.json();
-            }).then((response) => {
-                console.log(response);
-                listar();
-            }).catch((error) => {
-                console.log(error);
-            })
-        } else {
+    function excluir(id)
+    {
+        if(!(id >= 0)){
             alert('Não foi possivel realizar a exclusão do iten solicitado');
+            return
         }
+
+        const data = new FormData();
+        data.set('acao', 'excluir');
+        data.set('id',id);
+
+        fetch('pessoacontroller.php', {
+            method: 'post',
+            body: data
+        }).then((response) => {
+            return response.json();
+        }).then((response) => {
+            console.log(response);
+            listar();
+        }).catch((error) => {
+            console.log(error);
+        })
+
     }
-    
+
     listar();
+
     function listar() {
         const dadosTabela = new FormData();
         dadosTabela.set('acao', 'listar');
-        // dadosFormulario.set('acao', 'listar');
-        // const tabela = document.getElementById('idTabela');
-        // const dadosTebela = new Set()
-        // dadosTebela.add('acao', 'listar')
-        // console.log('valor da acao' + dadosTebela);
         fetch('pessoacontroller.php', {
             method: 'post',
             body: dadosTabela
@@ -130,6 +126,7 @@ $filter = '';
             return response.json()
         }).then((response) => {
             console.log(response)
+            document.getElementById('tbody').innerHTML = '';
             response.dados.forEach(function(pessoa) {
                 criarElementos(pessoa);
             })
@@ -202,11 +199,14 @@ $filter = '';
         td3.appendChild(linkEditar);
         tr.appendChild(td3);
 
+        const td15 = document.createElement("td");
         const botaoExcluir = document.createElement('button');
-        botaoExcluir.setAttribute('value' + pessoa.id);
+        botaoExcluir.setAttribute('value', pessoa.id);
+        botaoExcluir.setAttribute('type', 'button');
+        botaoExcluir.setAttribute('onclick', 'excluir('+pessoa.id+')');
         botaoExcluir.append('Excluir');
-        td3.appendChild(botaoExcluir);
-        tr.appendChild(td3);
+        td15.appendChild(botaoExcluir);
+        tr.appendChild(td15);
 
         document.getElementById('tbody').append(tr);
 
