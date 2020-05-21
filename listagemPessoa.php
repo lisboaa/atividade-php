@@ -148,14 +148,64 @@ $filter = '';
         tr.appendChild(td1);
 
         const td2 = document.createElement("td");
-        td2.append('asoidoaios');
+        td2.append(pessoa.nascimento);
         tr.appendChild(td2);
+
+        const td4 = document.createElement("td");
+        td4.append(pessoa.pai);
+        tr.appendChild(td4);
+
+        const td5 = document.createElement("td");
+        td5.append(pessoa.mae);
+        tr.appendChild(td5);
+
+        const td6 = document.createElement("td");
+        td6.append(pessoa.endereco);
+        tr.appendChild(td6);
+
+        const td7 = document.createElement("td");
+        td7.append(pessoa.bairro);
+        tr.appendChild(td7);
+
+        const td8 = document.createElement("td");
+        td8.append(pessoa.cep);
+        tr.appendChild(td8);
+
+        const td9 = document.createElement("td");
+        td9.append(pessoa.cidade);
+        tr.appendChild(td9);
+
+        const td10 = document.createElement("td");
+        td10.append(pessoa.uf);
+        tr.appendChild(td10);
+
+        const td11 = document.createElement("td");
+        td11.append(pessoa.telefone);
+        tr.appendChild(td11);
+
+        const td12 = document.createElement("td");
+        td12.append(pessoa.celular);
+        tr.appendChild(td12);
+
+        const td13 = document.createElement("td");
+        td13.append(pessoa.email);
+        tr.appendChild(td13);
+
+        const td14 = document.createElement("td");
+        td14.append(pessoa.sexo);
+        tr.appendChild(td14);
 
         const td3 = document.createElement("td");
         const linkEditar = document.createElement('a');
-        linkEditar.setAttribute('href', 'formPessoa.php?id=' + pessoa.id)
-        linkEditar.append('editar');
+        linkEditar.setAttribute('href', 'formPessoa.php?id=' + pessoa.id);
+        linkEditar.append('Editar');
         td3.appendChild(linkEditar);
+        tr.appendChild(td3);
+
+        const botaoExcluir = document.createElement('button');
+        botaoExcluir.setAttribute('value' + pessoa.id);
+        botaoExcluir.append('Excluir');
+        td3.appendChild(botaoExcluir);
         tr.appendChild(td3);
 
         document.getElementById('tbody').append(tr);
