@@ -68,7 +68,7 @@ $dadoPessoa = [];
     const valorUrl = new URL(url);
     const paramId = valorUrl.searchParams.get("id");
 
-    if(paramId >= 0){
+    if(paramId > 0){
         editar(paramId);
     }
 
@@ -108,7 +108,7 @@ $dadoPessoa = [];
     })
 
     function Teste() {
-        if (paramId >=0) {
+        if (paramId > 0) {
             atualizar()
             console.log("Atualizou");
             return true;
@@ -131,10 +131,9 @@ $dadoPessoa = [];
         }).then((response) => {
             return response.json();
         }).then((response) => {
-            console.log(response);
             alert(response.dados);
-            if (response.sucesso == true) {
-                window.location.href = "listagemPessoa.php";
+            if (response.sucesso) {
+               location.href = "listagemPessoa.php";
             }
         }).catch((error) => {
             console.log(error);
@@ -148,6 +147,7 @@ $dadoPessoa = [];
     function Salvar() {
         const formulario = document.getElementById('formulario');
         const dadosFormulario = new FormData(formulario);
+        dadosFormulario.set('acao', 'gravar');
 
         fetch('pessoacontroller.php', {
             method: 'post',

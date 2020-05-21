@@ -80,7 +80,7 @@ switch ($acao) {
             echo json_encode(array("sucesso" => false, "dados" => $exception->getMessage()));
             exit();
         }
-        json_encode(array("sucesso" => true, "dados" => "Dados atualizados com sucesso"));
+        echo json_encode(array("sucesso" => true, "dados" => "Dados atualizados com sucesso"));
         break;
 
     case 'listar':
