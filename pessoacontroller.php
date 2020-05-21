@@ -84,11 +84,17 @@ switch ($acao) {
         break;
 
     case 'listar':
-        $db = Banco::getConnection();
-        $sql = "SELECT * FROM pessoa WHERE id {$filter} ORDER BY nome";
-        $buscarPessoa = $db->prepare($sql);
-        $buscarPessoa->execute($bindParams);
-        $dadosPessoa = $buscarPessoa->fetchAll(PDO::FETCH_OBJ);
+        try {
+            $db = Banco::getConnection();
+            $sql = "SELECT * FROM pessoa ORDER BY nome";
+            $buscarPessoa = $db->prepare($sql);
+            $buscarPessoa->execute();
+            $dadosPessoa = $buscarPessoa->fetchAll(PDO::FETCH_OBJ);
+        } catch (PDOException $exception) {
+            echo json_encode(array("sucesso" => false, "dados" => $exception->getMessage()));
+            exit();
+        }
+        echo json_encode(array("sucesso"  => true, "dados" => $dadosPessoa));
         break;
 
     case 'excluir':

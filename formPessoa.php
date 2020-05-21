@@ -134,7 +134,7 @@ $dadoPessoa = [];
         }).then((response) => {
             console.log(response);
             alert(response.dados);
-            if (response.sucesso) {
+            if (response.sucesso == true) {
                 window.location.href = "listagemPessoa.php";
             }
         }).catch((error) => {

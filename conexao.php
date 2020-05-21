@@ -6,7 +6,7 @@ class Banco {
 
     protected static function connect() {
         try {
-            self::$connection = new PDO('mysql:host=192.168.1.11:33066;dbname=atividade-php', 'root', 'root');
+            self::$connection = new PDO('mysql:host=192.168.1.7:33066;dbname=atividade-php', 'root', 'root');
             self::$connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             return self::$connection;
