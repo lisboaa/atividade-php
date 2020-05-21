@@ -2,6 +2,8 @@
 
 require 'conexao.php';
 
+
+
 function formatarData($data, $format) {
     switch ($format) {
         case 'BR':
@@ -11,7 +13,6 @@ function formatarData($data, $format) {
     }
     return '';
 }
-
 $acao = $_REQUEST['acao'];
 //var_dump($acao);die(0);
 switch ($acao) {
@@ -83,20 +84,6 @@ switch ($acao) {
         echo json_encode(array("sucesso" => true, "dados" => "Dados atualizados com sucesso"));
         break;
 
-    case 'listar':
-        try {
-            $db = Banco::getConnection();
-            $sql = "SELECT * FROM pessoa ORDER BY nome";
-            $buscarPessoa = $db->prepare($sql);
-            $buscarPessoa->execute();
-            $dadosPessoa = $buscarPessoa->fetchAll(PDO::FETCH_OBJ);
-        } catch (PDOException $exception) {
-            echo json_encode(array("sucesso" => false, "dados" => $exception->getMessage()));
-            exit();
-        }
-        echo json_encode(array("sucesso"  => true, "dados" => $dadosPessoa));
-        break;
-
     case 'excluir':
         $db = Banco::getConnection();
         $sql = 'DELETE FROM pessoa WHERE id = :id';
@@ -122,11 +109,40 @@ switch ($acao) {
         break;
 
 
-    case 'filtro':
-        $sql = "SELECT * FROM pessoa WHERE id {$filter} ORDER BY nome";
-        $buscarDadosPessoa = $db->prepare($sql);
-        $buscarDadosPessoa->execute($bindParams);
-        $dadosPessoa = $buscarDadosPessoa->fetchAll(PDO::FETCH_OBJ);
+    case 'listar':
+
+        $bindParams = [];
+        $filters = [];
+        if (isset($_POST['buscarnome']) and !empty($_POST['buscarnome'])) {
+            $bindParams[':buscarnome'] = "%{$_POST['buscarnome']}%";
+            $filters[] = " nome LIKE :buscarnome";
+        }
+        if (isset($_POST['buscarnascimento']) and !empty($_POST['buscarnascimento'])) {
+            $dataFormatada =  formatarData($_POST['buscarnascimento'],'US');
+            $bindParams[':buscarnascimento'] = $dataFormatada;
+            $filters[] = " nascimento = :buscarnascimento";
+        }
+        if (isset($_POST['buscarmesnascimento']) and !empty($_POST['buscarmesnascimento'])) {
+            $bindParams[':buscarmesnascimento'] = $_POST['buscarmesnascimento'];
+            $filters[] = "  MONTH(nascimento) = :buscarmesnascimento";
+        }
+
+        $filter = implode(' AND ', $filters);
+        if(!empty($filter)){
+            $filter = "WHERE {$filter}";
+        }
+
+        try {
+            $db = Banco::getConnection();
+            $sql = "SELECT * FROM pessoa {$filter} ORDER BY nome";
+            $buscarDadosPessoa = $db->prepare($sql);
+            $buscarDadosPessoa->execute($bindParams);
+            $dadosPessoa = $buscarDadosPessoa->fetchAll(PDO::FETCH_OBJ);
+        } catch (PDOException $exception) {
+           echo json_encode((array("sucesso" => false, 'dados' => $exception->getMessage())));
+           exit();
+        }
+        echo json_encode((array("sucesso" => false, 'dados' => $dadosPessoa)));
         break;
     default:
         die('acao nao identificada: '.$acao);

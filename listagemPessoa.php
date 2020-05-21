@@ -1,44 +1,16 @@
 <?php
 
 require 'conexao.php';
-$filter = '';
 
-//function formatarData($data, $format) {
-//    switch ($format) {
-//        case 'BR':
-//            return implode('/', array_reverse(explode('-', $data)));
-//        case 'US':
-//            return implode('-', array_reverse(explode('/', $data)));
-//    }
-//    return '';
-//}
-
-//$bindParams = [];
-//if (isset($_GET['buscarnome']) and !empty($_GET['buscarnome'])) {
-//    $bindParams[':buscarnome'] = "%{$_GET['buscarnome']}%";
-//    $filter .= " AND nome LIKE :buscarnome";
-//}
-//if (isset($_GET['buscarnascimento']) and !empty($_GET['buscarnascimento'])) {
-//    $dataFormatada =  formatarData($_GET['buscarnascimento'],'US');
-//    $bindParams[':buscarnascimento'] = $dataFormatada;
-//    $filter .= " AND nascimento = :buscarnascimento";
-//}
-//if (isset($_GET['buscarmesnascimento']) and !empty($_GET['buscarmesnascimento'])) {
-//    $bindParams[':buscarmesnascimento'] = $_GET['buscarmesnascimento'];
-//    $filter .= " AND MONTH(nascimento) = :buscarmesnascimento";
-//}
-
-//try {
-//    $db = Banco::getConnection();
-//    $sql = "SELECT * FROM pessoa WHERE id {$filter} ORDER BY nome";
-//    $buscarDadosPessoa = $db->prepare($sql);
-//    $buscarDadosPessoa->execute($bindParams);
-//    $dadosPessoa = $buscarDadosPessoa->fetchAll(PDO::FETCH_OBJ);
-//} catch (PDOException $exception) {
-//    echo $exception->getMessage();
-//}
-
-
+function formatarData($data, $format) {
+    switch ($format) {
+        case 'BR':
+            return implode('/', array_reverse(explode('-', $data)));
+        case 'US':
+            return implode('-', array_reverse(explode('/', $data)));
+    }
+    return '';
+}
 ?>
 
 <!doctype html>
@@ -51,12 +23,12 @@ $filter = '';
     <title>Document</title>
 </head>
 <body>
-<!--<form id="formulario">-->
-<!--    <input type="text" name="buscarnome">-->
-<!--    <input type="text" name="buscarnascimento" placeholder="Buscar por data de nascimento">-->
-<!--    <input type="number" min="1" max="12" maxlength="2" name="buscarmesnascimento" placeholder="Buscar por mes do nascimento">-->
-<!--    <button type="submit">Buscar</button>-->
-<!--</form>-->
+<form id="formulario">
+    <input type="text" name="buscarnome">
+    <input type="text" name="buscarnascimento" placeholder="Buscar por data de nascimento">
+    <input type="number" min="1" max="12" maxlength="2" name="buscarmesnascimento" placeholder="Buscar por mes do">
+    <button type="submit">Buscar</button>
+</form>
     <table border="1" id="idTabela">
         <thead>
             <tr>
@@ -114,27 +86,77 @@ $filter = '';
 
     }
 
-    listar();
+   listar();
+
+   document.getElementById('formulario').addEventListener("submit", (e) => {
+       e.preventDefault();
+       document.getElementById('tbody').innerHTML = '';
+       listar();
+   })
 
     function listar() {
-        const dadosTabela = new FormData();
-        dadosTabela.set('acao', 'listar');
+        const dadosForm = document.getElementById('formulario');
+        const dadosBusca = new FormData(dadosForm);
+        dadosBusca.set('acao', 'listar');
         fetch('pessoacontroller.php', {
             method: 'post',
-            body: dadosTabela
+            body: dadosBusca
         }).then((response) => {
-            return response.json()
+            return response.json();
         }).then((response) => {
-            console.log(response)
-            document.getElementById('tbody').innerHTML = '';
             response.dados.forEach(function(pessoa) {
                 criarElementos(pessoa);
             })
+            console.log(response);
         }).catch((error) => {
             console.log(error);
         })
     }
 
+
+    // function criarElementFiltro() {
+    //     const idFormulario = document.getElementById('formulario');
+    //
+    //     const input2 = document.createElement('input');
+    //     input2.setAttribute('style','width:240px;');
+    //     input2.setAttribute('name','buscarnome;');
+    //     input2.setAttribute('placeholder', 'Digite o nome para realizar a busca.');
+    //     idFormulario.appendChild(input2);
+    //
+    //     const input3 = document.createElement('input');
+    //     input3.setAttribute('style','width:280px;');
+    //     input3.setAttribute('style','margin-left:10px');
+    //     input3.setAttribute('name','buscarnascimento');
+    //     input3.setAttribute('placeholder', 'Digite o nascimento para realizar a busca.');
+    //     idFormulario.appendChild(input3);
+    //
+    //     const input = document.createElement('input');
+    //     input.setAttribute('style','width:280px;');
+    //     input.setAttribute('style','margin-left:10px');
+    //     input.setAttribute('name','buscarmesnascimento');
+    //     input.setAttribute('placeholder', 'Digite o mes do nascimento para realizar a busca.');
+    //     idFormulario.appendChild(input);
+    //
+    //     const button = document.createElement('button');
+    //     button.setAttribute('onclick','filtrar()');
+    //     button.setAttribute('style','margin-left:10px;');
+    //     button.append('Buscar');
+    //     idFormulario.appendChild(button);
+    //
+    // }
+
+    function adicionarPessoa() {
+        const idFormulario = document.getElementById('formulario');
+        const novoBotao = document.createElement('button');
+        novoBotao.setAttribute('onclick','adicionarPessoa()');
+        novoBotao.setAttribute('style','margin-left: 10px;');
+        novoBotao.setAttribute('id','adicionar');
+        novoBotao.append('Adicionar Pessoa');
+        idFormulario.appendChild(novoBotao);
+        window.location.href = "formPessoa.php";
+    }
+
+   // criarElementFiltro();
 
     function criarElementos(pessoa) {
 
