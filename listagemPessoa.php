@@ -2,15 +2,15 @@
 
 require 'conexao.php';
 
-function formatarData($data, $format) {
-    switch ($format) {
-        case 'BR':
-            return implode('/', array_reverse(explode('-', $data)));
-        case 'US':
-            return implode('-', array_reverse(explode('/', $data)));
-    }
-    return '';
-}
+//function formatarData($data, $format) {
+//    switch ($format) {
+//        case 'BR':
+//            return implode('/', array_reverse(explode('-', $data)));
+//        case 'US':
+//            return implode('-', array_reverse(explode('/', $data)));
+//    }
+//    return '';
+//}
 ?>
 
 <!doctype html>
@@ -53,6 +53,18 @@ function formatarData($data, $format) {
     </table>
 
 <script>
+
+    function formatarData(data, formato) {
+        switch (formato) {
+            case 'BR':
+                return data.split('-').reverse().join('/');
+            break;
+
+            case 'US':
+                return date.split('/').reverse().join('-');
+        }
+        return '';
+    }
 
     function excluir(id)
     {
@@ -97,6 +109,9 @@ function formatarData($data, $format) {
         }).then((response) => {
             return response.json();
         }).then((response) => {
+            /*
+            * percorre os dados referente a query e cria elementos nativos da tabela (tr, td etc...)
+            * */
             response.dados.forEach(function(pessoa) {
                 criarElementos(pessoa);
             })
@@ -126,7 +141,7 @@ function formatarData($data, $format) {
         tr.appendChild(td1);
 
         const td2 = document.createElement("td");
-        td2.append(pessoa.nascimento);
+        td2.append(formatarData(pessoa.nascimento, 'BR'));
         tr.appendChild(td2);
 
         const td4 = document.createElement("td");
