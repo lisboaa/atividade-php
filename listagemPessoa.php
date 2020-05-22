@@ -54,13 +54,6 @@ function formatarData($data, $format) {
 
 <script>
 
-   //  document.getElementById('excluir');
-   // let valorId = document.getElementById('id').value;
-
-    // document.getElementById('formulario').addEventListener('submit', (event) => {
-    //     event.preventDefault();
-    // })
-
     function excluir(id)
     {
         if(!(id >= 0)){
@@ -113,38 +106,6 @@ function formatarData($data, $format) {
         })
     }
 
-
-    // function criarElementFiltro() {
-    //     const idFormulario = document.getElementById('formulario');
-    //
-    //     const input2 = document.createElement('input');
-    //     input2.setAttribute('style','width:240px;');
-    //     input2.setAttribute('name','buscarnome;');
-    //     input2.setAttribute('placeholder', 'Digite o nome para realizar a busca.');
-    //     idFormulario.appendChild(input2);
-    //
-    //     const input3 = document.createElement('input');
-    //     input3.setAttribute('style','width:280px;');
-    //     input3.setAttribute('style','margin-left:10px');
-    //     input3.setAttribute('name','buscarnascimento');
-    //     input3.setAttribute('placeholder', 'Digite o nascimento para realizar a busca.');
-    //     idFormulario.appendChild(input3);
-    //
-    //     const input = document.createElement('input');
-    //     input.setAttribute('style','width:280px;');
-    //     input.setAttribute('style','margin-left:10px');
-    //     input.setAttribute('name','buscarmesnascimento');
-    //     input.setAttribute('placeholder', 'Digite o mes do nascimento para realizar a busca.');
-    //     idFormulario.appendChild(input);
-    //
-    //     const button = document.createElement('button');
-    //     button.setAttribute('onclick','filtrar()');
-    //     button.setAttribute('style','margin-left:10px;');
-    //     button.append('Buscar');
-    //     idFormulario.appendChild(button);
-    //
-    // }
-
     function adicionarPessoa() {
         const idFormulario = document.getElementById('formulario');
         const novoBotao = document.createElement('button');
@@ -155,8 +116,6 @@ function formatarData($data, $format) {
         idFormulario.appendChild(novoBotao);
         window.location.href = "formPessoa.php";
     }
-
-   // criarElementFiltro();
 
     function criarElementos(pessoa) {
 
@@ -231,23 +190,6 @@ function formatarData($data, $format) {
         tr.appendChild(td15);
 
         document.getElementById('tbody').append(tr);
-
-
-        // const td = document.createElement("TD");
-        // const texto = document.createTextNode("Valor do campo");
-        // td.appendChild(texto);
-        // document.getElementById("tbody").appendChild(td);
-        //
-        // const buttonExcuir = document.createElement('BUTTON');
-        // const textoBotao = document.createTextNode('Excluir');
-        // buttonExcuir.appendChild(textoBotao)
-        // document.getElementById("tbody").appendChild(buttonExcuir);
-        //
-        //
-        // const buttonEditar = document.createElement('BUTTON');
-        // const textoBotaoEditar = document.createTextNode('Editar');
-        // buttonEditar.appendChild(textoBotaoEditar);
-        // document.getElementById("tbody").appendChild(buttonEditar);
     }
 </script>
 </body>
