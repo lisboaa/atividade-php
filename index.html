@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en" ng-app="listaPessoa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js" crossorigin="anonymous"></script>
+
+</head>
+
+<body ng-controller="pessoaController">
+
+<style>
+    .t-table {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        padding: 30px;
+    }
+</style>
+
+<h4 ng-bind="app"></h4>
+
+<form ng-submit="salvar()">
+    <input type="hidden" ng-model="pessoa.id" id="id" name="id" value="">
+    <label>Nome:</label>
+    <input name="nome" ng-model="pessoa.nome" id="nome" value="" type="text"><br><br>
+    <label>Nascimento:</label>
+    <input name="nascimento" ng-model="pessoa.nascimento" id="nascimento" value="" type="text"><br><br>
+    <label>Pai:</label>
+    <input name="pai" id="pai" ng-model="pessoa.pai" value="" type="text"><br><br>
+    <label>Mae:</label>
+    <input name="mae" id="mae" ng-model="pessoa.mae" value="" type="text"><br><br>
+    <label>Cep:</label>
+    <input name="cep" ng-model="pessoa.cep" type= "text" id="cep" value="" size="10" maxlength="9"><br><br>
+    <label>Endereço:</label>
+    <input id="rua" name="endereco"  ng-model="pessoa.endereco" value="" type="text"><br><br>
+    <label>Bairro:</label>
+    <input id="bairro" name="bairro" ng-model="pessoa.bairro" value="" type="text"><br><br>
+    <label>Cidade:</label>
+    <input id="cidade" name="cidade" ng-model="pessoa.cidade" value="" type="text"><br><br>
+    <label>Uf:</label>
+    <input id="uf" name="uf" value="" ng-model="pessoa.uf" type="text"><br><br>
+    <label>Telefone:</label>
+    <input id="telefone" name="telefone" ng-model="pessoa.telefone" value="" type="text"><br><br>
+    <label>Celular:</label>
+    <input name="celular" id="celular" ng-model="pessoa.celular" value="" type="text"><br><br>
+    <label>Email:</label>
+    <input name="email" id="email" ng-model="pessoa.email" value="" type="text"><br><br>
+
+    <label>Sexo:</label>
+    <select name="sexo" id="sexo">
+        <option></option>
+        <option value="M">Masculino</option>
+        <option value="F">Feminino</option>
+    </select><br><br>
+    <input type="submit">
+</form>
+<script>
+
+    angular.module("listaPessoa",[]);
+    angular.module("listaPessoa").controller("pessoaController", ($scope, $http) => {
+        $scope.app = "Crud pessoa";
+
+        $scope.pessoa = {};
+
+        $scope.salvar = () => {
+            $http({
+                method: "POST",
+                url: "/data/controllers/PessoaController.php?acao=salvar",
+                data: $scope.pessoa
+            }).then((response) => {
+                if (response.error){
+                    console.log(response);
+                }
+            }).then((response) => {
+                delete $scope.pessoa;
+                location.href = 'formPessoa.php';
+                console.log(response);
+            }).catch((error) => {
+                console.log(error);
+            })
+        }
+    });
+
+</script>
+</body>
+</html>
