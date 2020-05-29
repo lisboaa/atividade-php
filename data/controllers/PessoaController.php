@@ -1,16 +1,15 @@
 <?php
 
 require_once __DIR__ . '/../services/PessoaService.php';
-$formData = json_decode(file_get_contents("php://input"));
 class PessoaController
 {
     public function buscarPessoa() {
         try {
-            $pessoa = (new PessoaService())->buscarId();
+            $dadosPessoa = (new PessoaService())->listar();
+            return json_encode(array("sucesso" => true, "message" => "Dados retornado com sucesso", "dados" => $dadosPessoa));
         }catch (Exception $exception) {
             return $exception->getMessage();
         }
-        return json_encode(array('sucesso' => true, 'dados' => $pessoa));
     }
 
     public function salvar()
@@ -26,6 +25,28 @@ class PessoaController
             return json_encode(array("sucesso" => false, "dados" => $ex->getMessage()));
         }
 
+    }
+
+    public function buscarId()
+    {
+        $formData = json_decode(file_get_contents("php://input"));
+        try{
+            $dadosPessoa = (new PessoaService())->buscarId($formData);
+            return json_encode(array("sucesso" => true, "message" => "Consulta retornada com sucesso", "dados" => $dadosPessoa));
+        } catch(Exception $ex) {
+            return json_encode(array("sucesso" => false, "dados" => $ex->getMessage()));
+        }
+
+    }
+
+    public function atualizar() {
+        $formData = json_decode(file_get_contents("php://input"));
+        try {
+            $dadosPessoa = (new PessoaService())->atualizar($formData);
+            return json_encode(array("sucesso" => true, "message" => "Dados atualizados com sucesso", "dados" => $dadosPessoa));
+        }catch (PDOException $exception) {
+            return json_encode(array("sucesso" => false, "dados" => $exception->getMessage()));
+        }
     }
 }
 
@@ -43,7 +64,7 @@ switch ($_GET['acao']) {
         echo (new PessoaController)->buscarId();
         break;
     case 'listar':
-        echo (new PessoaController)->listar();
+        echo (new PessoaController)->buscarPessoa();
         break;
     default:
         echo 'não existe a açao';

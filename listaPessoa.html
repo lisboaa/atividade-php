@@ -1,13 +1,86 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" ng-app="dadosPessoa">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Listagem de Pessoa</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js" crossorigin="anonymous"></script>
 </head>
-<body>
-
+<body ng-controller="pessoaController">
+<style>
+    .c-container{
+        display: flex;
+        flex-direction: row;
+        height: 700px;
+        align-items: center;
+        justify-content: center;
+    }
+    .t-table {
+        width: 80%;
+    }
+</style>
+<container class="c-container">
+    <table class="table t-table" ng-init="listarDadosPessoa()">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nome</th>
+                <th>Nascimento</th>
+                <th>Pai</th>
+                <th>Mae</th>
+                <th>Cep</th>
+                <th>Endereço</th>
+                <th>Bairro</th>
+                <th>Cidade</th>
+                <th>UF</th>
+                <th>Telefone</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="dadosPessoa in pessoa">
+                <td>{{dadosPessoa.id}}</td>
+                <td>{{dadosPessoa.nome}}</td>
+                <td>{{dadosPessoa.nascimento}}</td>
+                <td>{{dadosPessoa.pai}}</td>
+                <td>{{dadosPessoa.mae}}</td>
+                <td>{{dadosPessoa.cep}}</td>
+                <td>{{dadosPessoa.endereco}}</td>
+                <td>{{dadosPessoa.bairro}}</td>
+                <td>{{dadosPessoa.cidade}}</td>
+                <td>{{dadosPessoa.telefone}}</td>
+                <td>{{dadosPessoa.uf}}</td>
+                <td><a href="index.html?id={{dadosPessoa.id}}">teste</a></td>
+            </tr>
+        </tbody>
+    </table>
+</container>
+<script>
+    angular.module("dadosPessoa",[]);
+    angular.module("dadosPessoa").controller("pessoaController", ($scope, $http) => {
+        $scope.pessoa = {};
+        // $routeProvider.when('index/:id', {
+        //     templateUrl: 'index.html'
+        // });
+        $scope.listarDadosPessoa = () => {
+            $http({
+                method: "GET",
+                url: "/data/controllers/PessoaController.php?acao=listar",
+            }).then((response) => {
+                if (response.error) {
+                    console.log(response);
+                }
+                return response.data;
+            }).then((response) => {
+                console.log(response.dados);
+                $scope.pessoa = response.dados;
+            }).catch((error) => {
+                console.log(error);
+            })
+        }
+    });
+</script>
 </body>
 </html>

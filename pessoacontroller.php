@@ -1,8 +1,6 @@
 <?php
-
+require_once __DIR__ . '/data/model/Pessoa.php';
 require 'conexao.php';
-
-
 
 function formatarData($data, $format) {
     switch ($format) {
