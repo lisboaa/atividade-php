@@ -8,7 +8,6 @@
     <title>Document</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js" crossorigin="anonymous"></script>
-
 </head>
 
 <body ng-controller="pessoaController">
@@ -25,39 +24,52 @@
 <h4 ng-bind="app"></h4>
 
 <form>
-    <input type="hidden" ng-model="pessoa.id" id="id" name="id" value="">
+
     <label>Nome:</label>
     <input name="nome" ng-model="pessoa.nome" id="nome" value="" type="text"><br><br>
+
     <label>Nascimento:</label>
     <input name="nascimento" ng-model="pessoa.nascimento" id="nascimento" value="" type="text"><br><br>
+
     <label>Pai:</label>
     <input name="pai" id="pai" ng-model="pessoa.pai" type="text"><br><br>
+
     <label>Mae:</label>
     <input name="mae" id="mae" ng-model="pessoa.mae" type="text"><br><br>
+
     <label>Cep:</label>
-    <input name="cep" ng-model="pessoa.cep" type= "text" id="cep" size="10" maxlength="9"><br><br>
+    <input name="cep" ng-model="pessoa.cep" type= "text" id="cep" size="10" value="" maxlength="9"><br><br>
+
     <label>Endereço:</label>
-    <input id="rua" name="endereco"  ng-model="pessoa.endereco" type="text"><br><br>
+    <input id="rua" name="logradouro"  value="" ng-model="pessoa.endereco" type="text"><br><br>
+
     <label>Bairro:</label>
-    <input id="bairro" name="bairro" ng-model="pessoa.bairro" type="text"><br><br>
+    <input id="bairro" name="bairro" value="" ng-model="pessoa.bairro" type="text"><br><br>
+
     <label>Cidade:</label>
-    <input id="cidade" name="cidade" ng-model="pessoa.cidade" type="text"><br><br>
+    <input id="cidade" name="localidade" ng-model="pessoa.cidade" valude="" type="text"><br><br>
+
     <label>Uf:</label>
-    <input id="uf" name="uf" value="" ng-model="pessoa.uf" type="text"><br><br>
+    <input id="uf" name="uf" value="" value="" ng-model="pessoa.uf" type="text"><br><br>
+
     <label>Telefone:</label>
     <input id="telefone" name="telefone" ng-model="pessoa.telefone" type="text"><br><br>
+
     <label>Celular:</label>
     <input name="celular" id="celular" ng-model="pessoa.celular" type="text"><br><br>
+
     <label>Email:</label>
     <input name="email" id="email" ng-model="pessoa.email" type="text"><br><br>
 
     <label>Sexo:</label>
-    <select name="sexo" id="sexo">
-        <option ng-model="pessoa.sexo" ng-selected="pessoa.sexo == ''"></option>
-        <option ng-model="pessoa.sexo" ng-selected="pessoa.sexo == M">Masculino</option>
-        <option ng-model="pessoa.sexo" ng-selected="pessoa.sexo = F">Feminino</option>
-    </select><br><br>
+    <select name="sexo" id="sexo" ng-model="pessoa.sexo">
+        <option value="M">Masculino</option>
+        <option value="F">Feminino</option>
+    </select>
+
+    <br><br>
     <button ng-click="gravar()" class="btn btn-primary">Enviar</button>
+    <button ng-click="cancelar()" class="btn btn-danger">Cancelar</button>
 </form>
 <script>
         angular.module("listaPessoa",[]);
@@ -67,7 +79,6 @@
             const url = window.location.href;
             const valorDaUrl = new URL(url);
             const paramId = valorDaUrl.searchParams.get('id');
-            console.log(paramId);
 
             $scope.buscaPessoa = () => {
                 $http({
@@ -92,17 +103,18 @@
             if (paramId > 0) {
                 $scope.buscaPessoa();
                 console.log('Atualizar');
-            } else {
-                salvar();
-                console.log('Salvar');
             }
 
-            $scope.gravar = function(){
+            $scope.gravar = () => {
                 if($scope.pessoa.id > 0){
                     $scope.atualizar();
                 } else {
                     $scope.salvar();
                 }
+            };
+
+            $scope.cancelar = () => {
+                location.href = "listaPessoa.html";
             }
 
             $scope.salvar = () => {
@@ -114,9 +126,9 @@
                     if (response.error){
                         console.log(response);
                     }
+                    return response;
                 }).then((response) => {
-                    delete $scope.pessoa;
-                    location.href = 'formPessoa.php';
+                    location.href = 'listaPessoa.html';
                     console.log(response);
                 }).catch((error) => {
                     console.log(error);
@@ -134,12 +146,76 @@
                     }
                     return response.data
                 }).then((response) => {
-                    // delete $scope.pessoa;
-                    location.href = 'listaPessoa.php';
+                    location.href = 'listaPessoa.html';
                     console.log(response);
                 }).catch((error) => {
                     console.log(error);
                 })
+            };
+
+            document.getElementById("cep").addEventListener("blur", function(event) {
+                pesquisacep(this.value);
+            });
+
+            function limpa_formulário_cep() {
+                //Limpa valores do formulário de cep.
+                document.getElementById('rua').value=("");
+                document.getElementById('bairro').value=("");
+                document.getElementById('cidade').value=("");
+                document.getElementById('uf').value=("");
+            }
+
+            function meu_callback(conteudo) {
+                if ("erro" in conteudo){
+                    alert("CEP não encontrado.");
+                    return;
+                }
+
+                //Atualiza os campos com os valores.
+                document.getElementById('rua').value=(conteudo.logradouro);
+                document.getElementById('bairro').value=(conteudo.bairro);
+                document.getElementById('cidade').value=(conteudo.localidade);
+                document.getElementById('uf').value=(conteudo.uf);
+            }
+            function pesquisacep(valor) {
+
+                //Nova variável "cep" somente com dígitos.
+                var cep = valor.replace(/\D/g, '');
+
+                //Verifica se campo cep possui valor informado.
+                if(!cep){
+                    return;
+                }
+
+                //Expressão regular para validar o CEP.
+                var validacep = /^[0-9]{8}$/;
+
+                //Valida o formato do CEP.
+                if(!validacep.test(cep)) {
+                    alert("Formato de CEP inválido.");
+                    return;
+                }
+
+                //Preenche os campos com "..." enquanto consulta webservice.
+                $scope.pessoa.rua="...";
+                $scope.pessoa.bairro="...";
+                $scope.pessoa.cidade="...";
+                $scope.pessoa.uf="...";
+
+                $http({
+                    method: "GET",
+                    url: 'https://viacep.com.br/ws/'+ cep +'/json/'
+                }).then((response) => {
+                    const dados = response.data;
+                    $scope.pessoa.endereco = dados.logradouro;
+                    $scope.pessoa.cidade = dados.localidade;
+                    $scope.pessoa.bairro = dados.bairro;
+                    $scope.pessoa.uf = dados.uf;
+                    console.log(response);
+                }).catch((error)=> {
+                    console.log(error);
+                })
+
             };
 
         });

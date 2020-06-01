@@ -8,26 +8,19 @@
     <title>Listagem de Pessoa</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js" crossorigin="anonymous"></script>
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <link href="data/src/css/style.css" type="text/css" rel="stylesheet">
 </head>
 <body ng-controller="pessoaController">
-<style>
-    .c-container{
-        display: flex;
-        flex-direction: row;
-        height: 700px;
-        align-items: center;
-        justify-content: center;
-    }
-    .t-table {
-        width: 80%;
-    }
-</style>
 <container class="c-container">
+    <input type="text" ng-model="criterioDeBusca" placeholder="O que deseja pesquisar?" class="p-input"/>
+    <button class="btn btn-primary bt-botaoAdicionar" ng-click="novo()">Adicionar</button>
     <table class="table t-table" ng-init="listarDadosPessoa()">
         <thead>
             <tr>
                 <th>Id</th>
                 <th>Nome</th>
+                <th>Sexo</th>
                 <th>Nascimento</th>
                 <th>Pai</th>
                 <th>Mae</th>
@@ -37,33 +30,35 @@
                 <th>Cidade</th>
                 <th>UF</th>
                 <th>Telefone</th>
+                <th>Acões</th>
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="dadosPessoa in pessoa">
-                <td>{{dadosPessoa.id}}</td>
-                <td>{{dadosPessoa.nome}}</td>
-                <td>{{dadosPessoa.nascimento}}</td>
-                <td>{{dadosPessoa.pai}}</td>
-                <td>{{dadosPessoa.mae}}</td>
-                <td>{{dadosPessoa.cep}}</td>
-                <td>{{dadosPessoa.endereco}}</td>
-                <td>{{dadosPessoa.bairro}}</td>
-                <td>{{dadosPessoa.cidade}}</td>
-                <td>{{dadosPessoa.telefone}}</td>
-                <td>{{dadosPessoa.uf}}</td>
-                <td><a href="index.html?id={{dadosPessoa.id}}">teste</a></td>
+            <tr ng-repeat="pessoa in pessoas | filter:criterioDeBusca; track by pessoa.id">
+                <td id="idpessoa">{{pessoa.id}}</td>
+                <td>{{pessoa.nome | uppercase}}</td>
+                <td>{{pessoa.sexo | uppercase}}</td>
+                <td>{{pessoa.nascimento | date:'dd/MM/yyyy'}}</td>
+                <td>{{pessoa.pai}}</td>
+                <td>{{pessoa.mae}}</td>
+                <td>{{pessoa.cep}}</td>
+                <td>{{pessoa.endereco}}</td>
+                <td>{{pessoa.bairro}}</td>
+                <td>{{pessoa.cidade}}</td>
+                <td>{{pessoa.telefone}}</td>
+                <td>{{pessoa.uf}}</td>
+                <td><a href="index.html?id={{pessoa.id}}" title="Clicke para realizar a edição."><i class="fas fa-edit"></i></a>
+                <button class="btn btn-danger btn-sm lista-button"  title="Clique para excluir." ng-click="ex(pessoa)"><i class="fa fa-trash"></i></button></td>
             </tr>
         </tbody>
     </table>
 </container>
 <script>
-    angular.module("dadosPessoa",[]);
-    angular.module("dadosPessoa").controller("pessoaController", ($scope, $http) => {
-        $scope.pessoa = {};
-        // $routeProvider.when('index/:id', {
-        //     templateUrl: 'index.html'
-        // });
+
+    const module = angular.module("dadosPessoa",[]);
+    module.controller("pessoaController", ($scope, $http) => {
+        $scope.pessoas = [];
+
         $scope.listarDadosPessoa = () => {
             $http({
                 method: "GET",
@@ -75,11 +70,35 @@
                 return response.data;
             }).then((response) => {
                 console.log(response.dados);
-                $scope.pessoa = response.dados;
+                $scope.pessoas = response.dados;
             }).catch((error) => {
                 console.log(error);
             })
         }
+
+        $scope.ex = (pessoa) => {
+            $http({
+                method: "POST",
+                url: "/data/controllers/PessoaController.php?acao=excluir",
+                data: {
+                    id: pessoa.id
+                }
+            }).then((response) => {
+                return response.data;
+            }).then((response) => {
+                const i = $scope.pessoas.indexOf(pessoa);
+                $scope.pessoas.splice(i, 1);
+
+                console.log(response);
+            }).catch((error)=> {
+                console.log(error);
+            })
+        }
+
+        $scope.novo = () => {
+            location.href = "index.html";
+        }
+
     });
 </script>
 </body>

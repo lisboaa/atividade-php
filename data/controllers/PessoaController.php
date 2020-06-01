@@ -48,6 +48,16 @@ class PessoaController
             return json_encode(array("sucesso" => false, "dados" => $exception->getMessage()));
         }
     }
+
+    public function excluir() {
+        $formData = json_decode(file_get_contents("php://input"));
+        $excluir = (new PessoaService())->excluir($formData);
+        try {
+            return json_encode(array("sucesso" => true, "message" => "Dados excluido com sucesso", "dados" => $excluir));
+        } catch (PDOException $exception) {
+            return json_encode(array("sucesso" => false, "message" => $exception));
+        }
+    }
 }
 
 switch ($_GET['acao']) {

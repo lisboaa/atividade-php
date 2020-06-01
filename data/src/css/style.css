@@ -1,5 +1,28 @@
-.t-table {
+.c-container{
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    height: 700px;
+    align-items: center;
     justify-content: center;
+}
+.t-table {
+    width: 80%;
+}
+f-button {
+    text-decoration:none;
+    font-size: 15px;
+}
+
+.p-input {
+    margin-bottom: 30px;
+}
+
+.bt-botaoAdicionar {
+    align-self: flex-end;
+    margin-right: 10%;
+    margin-bottom: 15px;
+}
+
+.lista-button {
+    font-size:5px; !important
 }

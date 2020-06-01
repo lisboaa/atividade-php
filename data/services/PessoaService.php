@@ -2,6 +2,16 @@
 require_once __DIR__ . '/../../conexao.php';
 require_once __DIR__ . '/../utils/formatarData.php';
 
+function formatarData($data, $formato) {
+    switch ($formato) {
+        case 'BR':
+            return implode('/', array_reverse(explode('-', $data)));
+        case 'US':
+            return implode('-', array_reverse(explode('/', $data)));
+    }
+    return false;
+}
+
 class PessoaService
 {
     function salvar($formData) {
@@ -24,7 +34,7 @@ class PessoaService
         $salvar->bindValue(":telefone", $formData->telefone,PDO::PARAM_STR );
         $salvar->bindValue(":celular", $formData->celular,PDO::PARAM_STR);
         $salvar->bindValue(":email", $formData->email, PDO::PARAM_STR);
-        $salvar->bindValue(":nascimento", $formData->nascimento, PDO::PARAM_STR);
+        $salvar->bindValue(":nascimento", formatarData($formData->nascimento, 'US'), PDO::PARAM_STR);
         $salvar->execute();
         return true;
     }
@@ -63,11 +73,11 @@ class PessoaService
         return true;
     }
 
-    function excluir() {
+    function excluir($formData) {
         $db = Banco::getConnection();
         $sql = 'DELETE FROM pessoa WHERE id = :id';
         $excluir = $db->prepare($sql);
-        $excluir->bindValue(":id", $_POST['id']);
+        $excluir->bindValue(":id", $formData->id);
         $excluir->execute();
         return true;
     }
