@@ -1,0 +1,14 @@
+.container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding-top: 250px;
+}
+
+.content {
+    width: 600px;
+}
+
+.b-button {
+    margin-top: 35px;
+}

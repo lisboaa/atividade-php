@@ -1,82 +1,85 @@
 <!doctype html>
-<html lang="en" ng-app="dadosPessoa">
+<html lang="en" ng-app="listaPessoa">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Listagem de Pessoa</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
     <script src='https://kit.fontawesome.com/a076d05399.js'></script>
-    <link href="data/src/css/style.css" type="text/css" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <link href="/data/src/css/style.css" rel="stylesheet">
+    <title>Listagem de pessoa</title>
 </head>
 <body ng-controller="pessoaController">
-<container class="c-container">
-    <input type="text" ng-model="criterioDeBusca" placeholder="O que deseja pesquisar?" class="p-input"/>
-    <button class="btn btn-primary bt-botaoAdicionar" ng-click="novo()">Adicionar</button>
-    <table class="table t-table" ng-init="listarDadosPessoa()">
+<div class="c-container">
+    <input placeholder="Campo de busca" ng-model="criterioDebusca">
+    <button class="btn btn-primary bt-botaoAdicionar" ng-click="novo()">Novo</button>
+    <table class="table-bordered t-table">
         <thead>
             <tr>
-                <th>Id</th>
                 <th>Nome</th>
-                <th>Sexo</th>
-                <th>Nascimento</th>
-                <th>Pai</th>
                 <th>Mae</th>
-                <th>Cep</th>
+                <th>Pai</th>
                 <th>Endereço</th>
                 <th>Bairro</th>
+                <th>Cep</th>
                 <th>Cidade</th>
-                <th>UF</th>
+                <th>Uf</th>
                 <th>Telefone</th>
-                <th>Acões</th>
+                <th>Celular</th>
+                <th>Email</th>
+                <th>Nascimento</th>
+                <th>Sexo</th>
+                <th>Ações</th>
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="pessoa in pessoas | filter:criterioDeBusca; track by pessoa.id">
-                <td id="idpessoa">{{pessoa.id}}</td>
-                <td>{{pessoa.nome | uppercase}}</td>
-                <td>{{pessoa.sexo | uppercase}}</td>
-                <td>{{pessoa.nascimento | date:'dd/MM/yyyy'}}</td>
-                <td>{{pessoa.pai}}</td>
+            <tr ng-repeat="pessoa in pessoas | filter:criterioDebusca track by $index">
+                <td>{{pessoa.nome}}</td>
                 <td>{{pessoa.mae}}</td>
-                <td>{{pessoa.cep}}</td>
+                <td>{{pessoa.pai}}</td>
                 <td>{{pessoa.endereco}}</td>
                 <td>{{pessoa.bairro}}</td>
+                <td>{{pessoa.cep}}</td>
                 <td>{{pessoa.cidade}}</td>
-                <td>{{pessoa.telefone}}</td>
                 <td>{{pessoa.uf}}</td>
-                <td><a href="index.html?id={{pessoa.id}}" title="Clicke para realizar a edição."><i class="fas fa-edit"></i></a>
-                <button class="btn btn-danger btn-sm lista-button"  title="Clique para excluir." ng-click="ex(pessoa)"><i class="fa fa-trash"></i></button></td>
+                <td>{{pessoa.telefone}}</td>
+                <td>{{pessoa.celular}}</td>
+                <td>{{pessoa.email}}</td>
+                <td>{{pessoa.nascimento | date:'dd/MM/yyyy'}}</td>
+                <td>{{pessoa.sexo}}</td>
+                <td class="tamanho-td">
+                    <a href="formularioPessoa.html?id={{pessoa.id}}"><i class="fas fa-edit"></i></a>
+                    <button class="btn btn-danger" ng-click="excluir(pessoa)"><i class="fas fa-trash"></i></button>
+                </td>
             </tr>
         </tbody>
     </table>
-</container>
+</div>
+</body>
 <script>
+    angular.module('listaPessoa', []);
+    angular.module('listaPessoa').controller('pessoaController', ($scope, $http) =>{
+       $scope.pessoas = [];
 
-    const module = angular.module("dadosPessoa",[]);
-    module.controller("pessoaController", ($scope, $http) => {
-        $scope.pessoas = [];
+       $http({
+           url:'/data/controllers/PessoaController.php?acao=listar',
+           method:'GET'
+       }).then((response) => {
+           return response.data;
+       }).then((response) => {
+           $scope.pessoas = response.dados;
+           console.log($scope.pessoas)
+       }).catch((error) => {
+           console.log(error);
+       });
 
-        $scope.listarDadosPessoa = () => {
-            $http({
-                method: "GET",
-                url: "/data/controllers/PessoaController.php?acao=listar",
-            }).then((response) => {
-                if (response.error) {
-                    console.log(response);
-                }
-                return response.data;
-            }).then((response) => {
-                console.log(response.dados);
-                $scope.pessoas = response.dados;
-            }).catch((error) => {
-                console.log(error);
-            })
-        }
+       $scope.novo = () => {
+           location.href = 'formularioPessoa.html';
+       }
 
-        $scope.ex = (pessoa) => {
+        $scope.excluir = (pessoa) => {
             $http({
                 method: "POST",
                 url: "/data/controllers/PessoaController.php?acao=excluir",
@@ -95,11 +98,6 @@
             })
         }
 
-        $scope.novo = () => {
-            location.href = "index.html";
-        }
-
     });
 </script>
-</body>
 </html>

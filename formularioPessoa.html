@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en" ng-app="crudPessoa">
+<head >
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/data/src/css/style.css">
+    <title>Formulario</title>
+</head>
+<body ng-controller="pessoaController">
+    <form>
+        <label>Nome:</label>
+        <input type="text" id="nome" name="nome" placeholder="Digite o nome" ng-model="pessoa.nome"><br><br>
+
+        <label>Mae:</label>
+        <input type="text" name="mae" id="mae" placeholder="Digite o nome do seu pai" ng-model="pessoa.mae"><br><br>
+
+        <label>Pai:</label>
+        <input type="text" placeholder="Digite o nome da sua mae" name="pai" id="pai" ng-model="pessoa.pai"><br><br>
+
+
+        <label>Endereço:</label>
+        <input type="text" placeholder="Digite o endereço" name="endereco" id="endereco" ng-model="pessoa.endereco"><br><br>
+
+        <label>Bairro:</label>
+        <input type="text" placeholder="Digite o bairro" id="bairro" name="bairro" ng-model="pessoa.bairro"><br><br>
+
+        <label>Cep:</label>
+        <input type="text" placeholder="Digite o cep" id="cep" name="cep" ng-model="pessoa.cep"><br><br>
+
+        <label>Cidade:</label>
+        <input type="text" placeholder="Digite a cidade" id="cidade" name="cidade" ng-model="pessoa.cidade"><br><br>
+
+        <label>Uf:</label>
+        <input type="text" placeholder="Digite o estado" id="uf" name="uf" ng-model="pessoa.uf"><br><br>
+
+        <label>Telefone:</label>
+        <input type="text" placeholder="Digite o telefone" id="telefone" name="telefone" ng-model="pessoa.telefone"><br><br>
+
+        <label>Celular:</label>
+        <input type="text" placeholder="Digite o celular" id="celular" name="celular" ng-model="pessoa.celular"><br><br>
+
+        <label>Email:</label>
+        <input type="text" placeholder="Digite o email" name="email" id="email" ng-model="pessoa.email" class="campo-email"><br><br>
+
+        <label>Nascimento:</label>
+        <input type="text" placeholder="Digite a data de nascimento" id="nascimento" ng-model="pessoa.nascimento"><br><br>
+
+        <label>Sexo:</label>
+        <select ng-model="pessoa.sexo" name="sexo">
+            <option value="M">Masculino</option>
+            <option value="F">Feminino</option>
+        </select>
+    </form>
+
+    <button class="btn btn-primary" ng-click="gravar()">Enviar</button>
+    <button class="btn btn-danger" ng-click="cancelar()">Voltar</button>
+    <script>
+        angular.module('crudPessoa', []);
+        angular.module('crudPessoa').controller('pessoaController' , ($scope, $http) => {
+            $scope.pessoa = {};
+            $scope.sexo = ['Masculino', 'Feminino'];
+
+            const valorUrl =  window.location.href;
+            const url = new URL(valorUrl);
+            const valorIr = url.searchParams.get('id');
+
+            $scope.salvar = () => {
+                $http({
+                    url:'/data/controllers/PessoaController.php?acao=salvar',
+                    method: 'POST',
+                    data: $scope.pessoa
+                }).then((response) => {
+                    return response;
+                    console.log(response)
+                }).catch((error) => {
+                    console.log(error);
+                })
+            }
+
+            $scope.buscarPessoa = () => {
+                $http({
+                    url:'/data/controllers/PessoaController.php?acao=buscarId',
+                    method: 'POST',
+                    data: {
+                        id: valorIr
+                    }
+                }).then((response) => {
+                    return response.data;
+                }).then((response) => {
+                    $scope.pessoa = response.dados;
+                }).catch((error) => {
+                    console.log(error);
+                })
+            }
+
+            $scope.atualizar = () => {
+                $http({
+                    url:'/data/controllers/PessoaController.php?acao=atualizar',
+                    method: 'POST',
+                    data: $scope.pessoa
+                }).then((response) => {
+                    return response.data;
+                }).catch((error) => {
+                    console.log(error);
+                })
+            }
+
+            if (valorIr > 0) {
+                console.log('Editar');
+                $scope.buscarPessoa();
+            }
+
+            $scope.gravar = () => {
+                    if ($scope.pessoa.id > 0) {
+                        $scope.atualizar();
+                        location.href = 'listaPessoa.html';
+                    } else {
+                        $scope.salvar();
+                        location.href = 'listaPessoa.html';
+                    }
+            }
+
+            $scope.cancelar = () => {
+                location.href = 'listaPessoa.html';
+            }
+
+            document.getElementById("cep").addEventListener("blur", function(event) {
+                pesquisacep(this.value);
+            });
+
+            function pesquisacep(valor) {
+
+                //Nova variável "cep" somente com dígitos.
+                var cep = valor.replace(/\D/g, '');
+
+                //Verifica se campo cep possui valor informado.
+                if(!cep){
+                    return;
+                }
+
+                //Expressão regular para validar o CEP.
+                var validacep = /^[0-9]{8}$/;
+
+                //Valida o formato do CEP.
+                if(!validacep.test(cep)) {
+                    alert("Formato de CEP inválido.");
+                    return;
+                }
+
+                //Preenche os campos com "..." enquanto consulta webservice.
+                $scope.pessoa.rua="...";
+                $scope.pessoa.bairro="...";
+                $scope.pessoa.cidade="...";
+                $scope.pessoa.uf="...";
+
+                $http({
+                    method: "GET",
+                    url: 'https://viacep.com.br/ws/'+ cep +'/json/'
+                }).then((response) => {
+                    const dados = response.data;
+                    $scope.pessoa.endereco = dados.logradouro;
+                    $scope.pessoa.cidade = dados.localidade;
+                    $scope.pessoa.bairro = dados.bairro;
+                    $scope.pessoa.uf = dados.uf;
+                    console.log(response);
+                }).catch((error)=> {
+                    console.log(error);
+                })
+
+            };
+
+        });
+    </script>
+</body>
+</html>

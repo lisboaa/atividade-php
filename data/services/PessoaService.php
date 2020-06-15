@@ -15,7 +15,6 @@ function formatarData($data, $formato) {
 class PessoaService
 {
     function salvar($formData) {
-
         $db = Banco::getConnection();
         $salvar = $db->prepare('INSERT INTO pessoa SET nome = :nome, 
                                                 sexo = :sexo, pai = :pai, mae = :mae,

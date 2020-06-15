@@ -8,7 +8,8 @@
 .t-table {
     width: 80%;
 }
-f-button {
+
+.f-button {
     text-decoration:none;
     font-size: 15px;
 }
@@ -25,4 +26,12 @@ f-button {
 
 .lista-button {
     font-size:5px; !important
+}
+
+.campo-email {
+    width: 480px;
+}
+
+.tamanho-td {
+    width: 70px;
 }
