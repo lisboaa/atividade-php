@@ -39,7 +39,9 @@ class AnuncioService
 
     function buscarAnuncios() {
         $db = Banco::getConnection();
-        $buscarAnuncios = $db->prepare('SELECT * FROM anuncios');
+        $buscarAnuncios = $db->prepare('SELECT * FROM anuncios
+                                                 INNER JOIN categoria ON anuncios.id_categoria = categoria.id
+                                                 ORDER BY categoria.nome');
         $buscarAnuncios->execute();
         $dadosAnuncio = $buscarAnuncios->fetchAll(PDO::FETCH_ASSOC);
         return $dadosAnuncio;
